@@ -308,6 +308,7 @@ class Worksheet(xmlwriter.XMLwriter):
         self.outline_changed = False
 
         self.original_row_height = 15
+        self.original_col_width = 8.43
         self.default_row_height = 15
         self.default_row_pixels = 20
         self.default_col_width = 8.43
@@ -6252,6 +6253,7 @@ class Worksheet(xmlwriter.XMLwriter):
     def _write_sheet_format_pr(self):
         # Write the <sheetFormatPr> element.
         default_row_height = self.default_row_height
+        default_col_width = self.default_col_width
         row_level = self.outline_row_level
         col_level = self.outline_col_level
 
@@ -6262,6 +6264,13 @@ class Worksheet(xmlwriter.XMLwriter):
 
         if self.default_row_zeroed:
             attributes.append(("zeroHeight", 1))
+
+        if self.default_col_width != self.original_col_width:
+            try:
+                default_col_width = int(0.5 + float(default_col_width))
+                attributes.append(("baseColWidth", default_col_width))
+            except (ValueError, TypeError):
+                warn("Invalid column width value. Falling back to default.")
 
         if row_level:
             attributes.append(("outlineLevelRow", row_level))
